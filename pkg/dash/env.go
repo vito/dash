@@ -2,7 +2,6 @@ package dash
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/chewxy/hm"
 	"github.com/dagger/dagger/codegen/introspection"
@@ -109,21 +108,15 @@ func NewEnv(schema *introspection.Schema) *Module {
 				panic(err)
 			}
 
-			if len(f.Args) > 0 {
-				args := NewRecordType("")
-				for _, arg := range f.Args {
-					argType, err := gqlToTypeNode(mod, arg.TypeRef)
-					if err != nil {
-						panic(err)
-					}
-					args.Add(arg.Name, hm.NewScheme(nil, argType))
+			args := NewRecordType("")
+			for _, arg := range f.Args {
+				argType, err := gqlToTypeNode(mod, arg.TypeRef)
+				if err != nil {
+					panic(err)
 				}
-				log.Println("ADDING FUN", t.Name, f.Name)
-				install.Add(f.Name, hm.NewScheme(nil, hm.NewFnType(args, ret)))
-			} else {
-				log.Println("ADDING 0-ARITY FIELD", t.Name, f.Name)
-				install.Add(f.Name, hm.NewScheme(nil, ret))
+				args.Add(arg.Name, hm.NewScheme(nil, argType))
 			}
+			install.Add(f.Name, hm.NewScheme(nil, hm.NewFnType(args, ret)))
 		}
 	}
 

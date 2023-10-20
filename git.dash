@@ -6,7 +6,7 @@ pub foo = bar ? "foo"
 
 cls Apko {
   pub wolfi(packages: [String!]!): Container! {
-    container().withExec(args: ["apk", "add"])
+    container.withExec(args: ["apk", "add"])
   }
 }
 
@@ -20,11 +20,11 @@ cls GitUtil {
   }
 
   pub withBase(base: Container): GitUtil! {
-    self(customBase: base)
+    self { customBase = base }
   }
 
   pub repo(url: String!): Repository! {
-    Repository(url: url, base: base()) # TODO: make parens implicit, Ruby + GraphQL style
+    Repository(url: url, base: base) # TODO: make parens implicit, Ruby + GraphQL style
   }
 }
 

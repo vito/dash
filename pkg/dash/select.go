@@ -9,6 +9,7 @@ import (
 type Select struct {
 	Receiver Node
 	Field    string
+	Args     Record
 }
 
 var _ Node = Select{}

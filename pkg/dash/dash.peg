@@ -12,7 +12,7 @@ Expr <- Class / Slot / Form
 
 Form <- Infix / Term
 
-Term <- Select / FunCall / List / Literal / Symbol
+Term <- Select / List / Literal / Symbol
 
 Class <- ClsToken _ name:Id _ block:Block {
   return ClassDecl{
@@ -95,10 +95,6 @@ UpperToken <- [A-Z][a-zA-Z0-9]* {
   return string(c.text), nil
 }
 
-FunCall <- name:Term args:ArgValues {
-  return FunCall{name.(Node), Record(args.([]Keyed[Node]))}, nil
-}
-
 ArgValues <- '(' args:KeyValue* ')' {
   return sliceOf[Keyed[Node]](args), nil
 }
@@ -158,8 +154,12 @@ Default <- left:Form _ InterroToken _ right:Term {
 }
 InterroToken <- '?'
 
-Select <- left:Term _ DotToken _ name:Id {
-  return Select{left.(Node), name.(string)}, nil
+Select <- left:Term _ DotToken _ name:Id args:ArgValues? {
+  return Select{
+    left.(Node),
+    name.(string),
+    Record(args.([]Keyed[Node])),
+  }, nil
 }
 DotToken <- '.'
 

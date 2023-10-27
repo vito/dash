@@ -82,7 +82,7 @@ func (f FunDecl) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {
 	if definedRet != nil {
 		// TODO: Unify?
 		if !definedRet.Eq(inferredRet) {
-			return nil, fmt.Errorf("FuncDecl.Infer: %q mismatch: defined as %s, inferred as %s", f.Named, definedRet, inferredRet)
+			return nil, fmt.Errorf("FuncDecl.Infer: %q mismatch: defined as %s, inferred as %s (%[2]T != %[3]T)", f.Named, definedRet, inferredRet)
 		}
 	}
 

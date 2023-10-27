@@ -345,7 +345,7 @@
         "required": true,
         "types": [
           {
-            "type": "term",
+            "type": "form",
             "named": true
           }
         ]
@@ -357,6 +357,56 @@
       "types": [
         {
           "type": "interro_token",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dot_resolve",
+    "named": true,
+    "fields": {
+      "args": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "arg_values",
+            "named": true
+          }
+        ]
+      },
+      "left": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "dot_resolve",
+            "named": true
+          },
+          {
+            "type": "term",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "id",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "dot_token",
           "named": true
         }
       ]
@@ -425,6 +475,10 @@
       "types": [
         {
           "type": "default",
+          "named": true
+        },
+        {
+          "type": "dot_resolve",
           "named": true
         }
       ]
@@ -650,7 +704,7 @@
     }
   },
   {
-    "type": "select",
+    "type": "resolve",
     "named": true,
     "fields": {
       "args": {
@@ -659,16 +713,6 @@
         "types": [
           {
             "type": "arg_values",
-            "named": true
-          }
-        ]
-      },
-      "left": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "term",
             "named": true
           }
         ]
@@ -683,13 +727,29 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "self",
+    "named": true,
+    "fields": {
+      "args": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "arg_values",
+            "named": true
+          }
+        ]
+      }
     },
     "children": {
       "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "dot_token",
+          "type": "self_token",
           "named": true
         }
       ]
@@ -742,22 +802,6 @@
     }
   },
   {
-    "type": "symbol",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "id",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
     "type": "term",
     "named": true,
     "fields": {},
@@ -774,11 +818,11 @@
           "named": true
         },
         {
-          "type": "select",
+          "type": "resolve",
           "named": true
         },
         {
-          "type": "symbol",
+          "type": "self",
           "named": true
         }
       ]
@@ -1223,6 +1267,10 @@
   },
   {
     "type": "quoted_raw_token",
+    "named": true
+  },
+  {
+    "type": "self_token",
     "named": true
   },
   {

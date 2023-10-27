@@ -3,16 +3,14 @@
 }
 
 Dash <- es:(_ e:Expr _ CommaToken? { return e, nil })* !. {
-  exprs := sliceOf[Node](es)
-  log.Println("!!! DASH", exprs)
-  return Block{exprs}, nil
+  return Block{sliceOf[Node](es)}, nil
 }
 
 Expr <- Class / Slot / Form
 
 Form <- Infix / Term
 
-Term <- Select / List / Literal / Symbol
+Term <- List / Literal / Self / Resolve
 
 Class <- ClsToken _ name:Id _ block:Block {
   return ClassDecl{
@@ -148,14 +146,17 @@ BangToken <- '!'
 
 CommaToken <- _ ',' _
 
-Infix <- Default
-Default <- left:Form _ InterroToken _ right:Term {
+Infix <- Default / DotResolve
+Default <- left:Form _ InterroToken _ right:Form {
   return Default{left.(Node), right.(Node)}, nil
 }
 InterroToken <- '?'
 
-Select <- left:Term _ DotToken _ name:Id args:ArgValues? {
-  return Select{
+DotResolve <- left:(DotResolve / Term) _ DotToken _ name:Id args:ArgValues? {
+  if args == nil {
+    args = []Keyed[Node]{}
+  }
+  return Resolve{
     left.(Node),
     name.(string),
     Record(args.([]Keyed[Node])),
@@ -173,9 +174,26 @@ Block <- '{' es:(_ e:Expr CommaToken? _ { return e, nil })* '}' {
   return Block{exprs}, nil
 }
 
-Symbol <- name:Id {
-  return Symbol{name.(string)}, nil
+Resolve <- name:Id args:ArgValues? {
+  if args == nil {
+    args = []Keyed[Node]{}
+  }
+  return Resolve{
+    Self{},
+    name.(string),
+    Record(args.([]Keyed[Node])),
+  }, nil
 }
+
+Self <- SelfToken args:ArgValues? {
+  if args == nil {
+    args = []Keyed[Node]{}
+  }
+  return Self{
+    Record(args.([]Keyed[Node])),
+  }, nil
+}
+SelfToken <- "self"
 
 // Literals
 

@@ -120,8 +120,7 @@ func (c ClassDecl) Hoist(env hm.Env, fresh hm.Fresher, depth int) error {
 	}
 
 	// set special 'self' keyword to match the function signature.
-	self := hm.NewScheme(nil, class)
-	class.Add("self", self)
+	self := hm.NewScheme(nil, NonNullType{class})
 	env.Add(c.Named, self)
 
 	// TODO: hacky, see elsewhere
@@ -163,8 +162,7 @@ func (c ClassDecl) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {
 	class.Parent = nil
 
 	// set special 'self' keyword to match the function signature.
-	self := hm.NewScheme(nil, class)
-	class.Add("self", self)
+	self := hm.NewScheme(nil, NonNullType{class})
 	env.Add(c.Named, self)
 
 	return class, nil

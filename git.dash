@@ -20,11 +20,19 @@ cls GitUtil {
   }
 
   pub withBase(base: Container): GitUtil! {
-    self { customBase = base }
+    # foo = self
+    # foo
+    # { self | customBase: base }
+    # self { customBase = base }
+    # self { customBase: base }
+    # self with(customBase: base)
+    # self + { customBase: base }
+    # extend self { customBase: base }
+    self(customBase: base)
   }
 
   pub repo(url: String!): Repository! {
-    Repository(url: url, base: base) # TODO: make parens implicit, Ruby + GraphQL style
+    Repository(url: url, base: base)
   }
 }
 

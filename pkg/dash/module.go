@@ -163,6 +163,13 @@ func (e *Module) Clone() hm.Env {
 	return mod
 }
 
+func (e *Module) HasAncestor(p *Module) bool {
+	if e.Parent == nil {
+		return false
+	}
+	return e.Parent == p || e.Parent.HasAncestor(p)
+}
+
 func (e *Module) AddClass(c *Module) *Module {
 	e.classes[c.Named] = c
 	return e
@@ -193,4 +200,14 @@ func (t *Module) Normalize(k, v hm.TypeVarSet) (Type, error) { return t, nil }
 func (t *Module) Types() hm.Types                            { return nil }
 func (t *Module) String() string                             { return t.Named }
 func (t *Module) Format(s fmt.State, c rune)                 { fmt.Fprintf(s, "%s", t.Named) }
-func (t *Module) Eq(other Type) bool                         { return other == t }
+
+func (t *Module) Eq(other Type) bool {
+	switch x := other.(type) {
+	case *Module:
+		return other == t ||
+			t.HasAncestor(x) || // TODO: is bidirectional right?
+			x.HasAncestor(t)
+	default:
+		return false
+	}
+}

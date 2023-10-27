@@ -1,30 +1,23 @@
 package dash
 
 import (
-	"fmt"
-
 	"github.com/chewxy/hm"
 )
 
-type Symbol struct {
-	Name string
+type Self struct{
+	// Slots to override.
+	Args Record
 }
 
-var _ Node = Symbol{}
+var _ Node = Self{}
 
-func (s Symbol) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {
-	scheme, found := env.SchemeOf(s.Name)
-	if !found {
-		return nil, fmt.Errorf("Symbol.Infer: %q not found in env", s.Name)
-	}
-	t, isMono := scheme.Type()
-	if !isMono {
-		return nil, fmt.Errorf("Symbol.Infer: TODO: %q is not monomorphic", s.Name)
-	}
-	return InferThunkResult(t), nil
+func (Self) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {
+	// TODO(vito): this used to Clone(), not sure if still
+	// needed or just garbage
+	return NonNullType{env.(*Module)}, nil
 }
 
-func (s Symbol) Body() hm.Expression { return s }
+func (s Self) Body() hm.Expression { return s }
 
 func InferThunkResult(t hm.Type) hm.Type {
 	switch x := t.(type) {

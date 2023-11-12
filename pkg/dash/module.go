@@ -14,14 +14,14 @@ type Module struct {
 	Parent *Module
 
 	classes map[string]*Module
-	vars    map[string]*hm.Scheme
+	slots   map[string]*hm.Scheme
 }
 
 func NewModule(name string) *Module {
 	env := &Module{
 		Named:   name,
 		classes: make(map[string]*Module),
-		vars:    make(map[string]*hm.Scheme),
+		slots:   make(map[string]*hm.Scheme),
 	}
 	return env
 }
@@ -127,7 +127,7 @@ var _ hm.Substitutable = (*Module)(nil)
 
 func (e *Module) Apply(subs hm.Subs) hm.Substitutable {
 	retVal := e.Clone().(*Module)
-	for _, v := range retVal.vars {
+	for _, v := range retVal.slots {
 		v.Apply(subs)
 	}
 	return retVal
@@ -135,19 +135,19 @@ func (e *Module) Apply(subs hm.Subs) hm.Substitutable {
 
 func (e *Module) FreeTypeVar() hm.TypeVarSet {
 	var retVal hm.TypeVarSet
-	for _, v := range e.vars {
+	for _, v := range e.slots {
 		retVal = v.FreeTypeVar().Union(retVal)
 	}
 	return retVal
 }
 
 func (e *Module) Add(name string, s *hm.Scheme) hm.Env {
-	e.vars[name] = s
+	e.slots[name] = s
 	return e
 }
 
 func (e *Module) SchemeOf(name string) (*hm.Scheme, bool) {
-	s, ok := e.vars[name]
+	s, ok := e.slots[name]
 	if ok {
 		return s, ok
 	}
@@ -189,7 +189,7 @@ func (e *Module) NamedType(name string) (*Module, bool) {
 func (e *Module) Remove(name string) hm.Env {
 	// TODO: lol, tombstone???? idk if i ever use this method. maybe i don't need
 	// to conform to hm.Env?
-	delete(e.vars, name)
+	delete(e.slots, name)
 	return e
 }
 

@@ -5,7 +5,6 @@ import (
 )
 
 type Node interface {
-	hm.Expression
 	hm.Inferer
 }
 

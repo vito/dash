@@ -14,10 +14,6 @@ type FunDecl struct {
 	Visibility Visibility
 }
 
-var _ hm.Expression = FunDecl{}
-
-func (f FunDecl) Body() hm.Expression { return f.Form }
-
 var _ hm.Inferer = FunDecl{}
 
 func (f FunDecl) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {

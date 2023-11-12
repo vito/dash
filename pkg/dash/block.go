@@ -10,10 +10,6 @@ type Block struct {
 	Forms []Node
 }
 
-var _ hm.Expression = Block{}
-
-func (f Block) Body() hm.Expression { return f }
-
 type Hoister interface {
 	Hoist(hm.Env, hm.Fresher, int) error
 }

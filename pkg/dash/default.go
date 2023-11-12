@@ -28,5 +28,3 @@ func (d Default) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {
 	}
 	return rt, nil
 }
-
-func (d Default) Body() hm.Expression { return d }

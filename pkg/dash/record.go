@@ -17,7 +17,3 @@ func (r Record) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {
 	}
 	return NewRecordType("", fields...), nil
 }
-
-var _ hm.Expression = Record{}
-
-func (r Record) Body() hm.Expression { return r }

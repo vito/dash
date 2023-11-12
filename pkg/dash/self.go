@@ -46,8 +46,6 @@ func (s Self) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {
 	return NonNullType{mod}, nil
 }
 
-func (s Self) Body() hm.Expression { return s }
-
 func InferThunkResult(t hm.Type) hm.Type {
 	switch x := t.(type) {
 	case NonNullType:

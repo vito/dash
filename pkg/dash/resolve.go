@@ -43,5 +43,3 @@ func (d Resolve) Infer(env hm.Env, fresh hm.Fresher) (hm.Type, error) {
 	}
 	return t, nil
 }
-
-func (d Resolve) Body() hm.Expression { return d }

@@ -33,5 +33,3 @@ func (l List) Infer(env hm.Env, f hm.Fresher) (hm.Type, error) {
 	}
 	return NonNullType{ListType{t}}, nil
 }
-
-func (l List) Body() hm.Expression { return l }

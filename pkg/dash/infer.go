@@ -39,7 +39,7 @@ func (infer *inferer) lookup(name string) error {
 	return nil
 }
 
-func (infer *inferer) consGen(expr hm.Expression) (err error) {
+func (infer *inferer) consGen(expr Node) (err error) {
 	// explicit types/inferers - can fail
 	switch et := expr.(type) {
 	case hm.Typer:
@@ -169,7 +169,7 @@ func (infer *inferer) consGen(expr hm.Expression) (err error) {
 	// return nil
 }
 
-func Infer(env hm.Env, expr hm.Expression, hoist bool) (*hm.Scheme, error) {
+func Infer(env hm.Env, expr Node, hoist bool) (*hm.Scheme, error) {
 	if expr == nil {
 		return nil, errors.Errorf("Cannot infer a nil expression")
 	}

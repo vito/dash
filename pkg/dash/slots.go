@@ -15,11 +15,6 @@ type SlotDecl struct {
 
 var _ Node = SlotDecl{}
 
-func (s SlotDecl) Body() hm.Expression {
-	// TODO(vito): return Value? unclear how Body is used
-	return s
-}
-
 var _ Hoister = SlotDecl{}
 
 func (c SlotDecl) Hoist(env hm.Env, fresh hm.Fresher, depth int) error {
@@ -105,8 +100,6 @@ type ClassDecl struct {
 }
 
 var _ Node = ClassDecl{}
-
-func (c ClassDecl) Body() hm.Expression { return c.Value }
 
 var _ Hoister = ClassDecl{}
 

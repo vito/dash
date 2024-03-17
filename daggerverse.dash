@@ -1,0 +1,99 @@
+cls Daggerverse {
+  pub goVersion = "1.21"
+  pub daggerVersion = "0.9.3"
+  pub postgresVersion = "15.3"
+  pub flyVersion = "0.1.128"
+
+  pub source: Directory! {
+    host.directory("..")
+  }
+
+  pub bin: File! {
+    go.fromVersion(goVersion).
+      withSource(self.source).
+      withEnvVariable("CGO_ENABLED", "0").
+      $(go build -o /bin/daggerverse).
+      file("/bin/daggerverse")
+  }
+
+  pub riverBin: File! {
+    go.fromVersion(goVersion).
+      withSource(self.source).
+      withEnvVariable("CGO_ENABLED", "0").
+      $(go build -o /bin/river github.com/riverqueue/river/cmd/river).
+      file("/bin/river")
+  }
+
+  pub appContainer: Container! {
+    container.from("alpine").
+      withFile("/usr/local/bin/daggerverse", self.bin).
+      withFile("/usr/local/bin/river", self.riverBin).
+      withEnvVariable("PORT", "8080").
+      withEnvVariable("MIGRATE", "true").
+      withExposedPort(8080).
+      withDefaultArgs.
+      withEntrypoint(["daggerverse"])
+  }
+
+  cls DBSpec {
+    pub name: String
+    pub forkFrom: String
+    pub machineSize: String
+    pub clusterSize: Int
+    pub volumeSize: Int
+  }
+
+  cls AppSpec {
+    pub name: String
+    pub machineSize: String
+    pub clusterSize: Int
+    pub volumeSize: Int
+  }
+
+  pvt fly(token: Secret!, dir = directory): Container! {
+    container.from("flyio/flyctl:${flyVersion}").
+      withSecretVariable("FLY_API_TOKEN", token).
+      withMountedDirectory("/app", dir).
+      withWorkdir("/app").
+      withEnvVariable("NOW", now())
+  }
+
+  pub deploy(
+    token: Secret!
+    tag: String = now("%Y-%m-%d")
+    web: AppSpec(
+      name: "daggerverse-${tag}"
+      machineSize: "performance-4x"
+      clusterSize: 1
+    )
+    workers: AppSpec(
+      name: "daggerverse-workers-${tag}"
+      machineSize: "performance-4x"
+      clusterSize: 1
+      volumeSize: 100
+    )
+    db: DBSpec(
+      name: "daggerverse-db-${tag}"
+      machineSize: "shared-cpu-1x"
+      clusterSize: 1
+      volumeSize: 30
+    )
+  ) {
+    apps = fly(token) $ apps list --json | jq ".[].name"
+
+    [webAppName, workersAppName].each { appName ->
+      if apps[appName] {
+        echo("App ${appName} already exists, skipping creation")
+      } else {
+        flyAppCreate(token, appName, self.appContainer)
+      }
+    }
+
+    if apps[dbAppName] {
+      echo("App ${dbAppName} already exists, skipping creation")
+    } else {
+      flyPostgresCreate(token, dbAppName, self.dbContainer(dbForkFrom, dbName, dbMachineSize, dbClusterSize, dbVolumeSize))
+      flyPostgresAttach(token, dbAppName, self.dbContainer(dbForkFrom, dbName, dbMachineSize, dbClusterSize, dbVolumeSize))
+    }
+  }
+}

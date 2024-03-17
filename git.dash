@@ -38,10 +38,13 @@ cls GitUtil {
 
 cls Repository {
   pub url: String!
-
   pub base: Container!
 
   pub clone(depth: Int!): Directory! {
     base.withExec(args: ["git", "clone", url, "./"]).directory(path: "./")
+    base
+      $ git clone $url ./
+      $ git "clone $url" ./
+      ./
   }
 }
